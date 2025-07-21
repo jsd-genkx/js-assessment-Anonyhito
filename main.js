@@ -12,41 +12,66 @@ const fieldCharacter = "░";
 const pathCharacter = "*";
 
 class Field {
+
 	constructor(field = [[]]) {
 		this.field = field;
 
-		// Replace with your own code //
-		// Set the home position at (0, 0) before the game starts
+
 		this.positionRow = 0;
 		this.positionCol = 0;
-		this.field[this.positionRow][this.positionCol] = pathCharacter;
 		this.gameOver = false
 	}
+
+	static createField(holes,row,column) { 
+
+	const field = [];
+	const len = row*column
+	const dimension = new Array(len).fill("░");
+
+	for (let i=0; i < holes; i++) {
+		const holeIndex = Math.floor(Math.random() * len)
+		dimension[holeIndex] = "O"
+	}
+
+	const hatIndex = Math.floor(Math.random() * len)
+	dimension[hatIndex] = "^"
+
+
+	for (let i=0; i < row; i++) {
+    const r = []
+    for (let j = 0; j < column; j++) {
+        r.push(dimension.pop());
+    }
+    field.push(r);
+}
+
+return field;
+}
 
 	// Print field //
 	print() {
 		clear();
-		//1. กระดาน
 		for (let row of this.field) {
-			console.log(row)
+			console.log(row) 
 		}
+	}
 
-		// Replace with your own code //
-		// console.log(this.field); // Please REMOVE this line before you start your code!
+	updatePath() {
+		 this.field[this.positionRow][this.positionCol] = fieldCharacter;
 	}
 
 
 	move(direction) {
-	if (direction === "l") {
+	if (direction === "a") {
 		this.moveLeft()
 	}
-	else if (direction === "r") {
+	else if (direction === "d") {
 		this.moveRight()
 	}
-	else if (direction === "u") {
+	else if (direction === "w") {
 		this.moveUp()
 	}
-	else if (direction === "d") {
+	else if (direction === "s") {
 		this.moveDown()
 	}
 }
@@ -54,12 +79,10 @@ class Field {
 
 	moveLeft() {
 		this.positionCol--
-
 	}
 
 	moveRight() {
 		this.positionCol++
-
 	}
 
 	moveUp() {
@@ -68,29 +91,28 @@ class Field {
 
 	moveDown() {
 		this.positionRow = this.positionRow + 1
-
 	}
 
-	checkCondition(positionRow, positionCol) {
+	checkCondition() {
 		//positionRow >= 0 positionCol >= 0
-	if (this.field.length <= positionRow || this.field[0].length <= positionCol || positionRow >= 0 || positionCol >= 0) {
+		//console.log(`positionRow: ${positionRow}, positionCol: ${positionCol}`)
+	if (this.field.length <= this.positionRow || this.field[0].length <= this.positionCol || this.positionRow < 0 || this.positionCol < 0) {
 		this.gameOver = true
-		console.log('Loses by attempting to move “outside” the field.')
-		return this.gameOver
+		console.log(`Loses by attempting to move “outside” the field.😡`)
+		return;
 	}
 
-	else if (this.field[positionRow][positionCol] === "O") {
+	else if (this.field[this.positionRow][this.positionCol] === "O") {
 		this.gameOver = true
-		console.log("Loses by landing on (and falling in) a hole.")
-		return this.gameOver
+		console.log(`Loses by landing on (and falling in) a hole.😭`)
+		return;
 	}
 
-	else if (this.field[positionRow][positionCol] === "^") {
+	else if (this.field[this.positionRow][this.positionCol] === "^") {
 		this.gameOver = true
-		console.log('Wins by finding their hat.')
-		return this.gameOver
-}
-
+		console.log(`Wins by finding their hat.🤠`)
+		return;
+	}
 }
 
 	update() {
@@ -99,24 +121,28 @@ class Field {
 		}
 	}
 
+	createActor() {
+		const row = Math.floor(Math.random() *this.field.length);
+		const column = Math.floor(Math.random() *this.field[0].length);
+		this.positionRow = row;
+		this.positionCol = column;
+		this.field[this.positionRow][this.positionCol] = pathCharacter;
+	}
+
+
 	runner() {
+		this.createActor()
 		while (!this.gameOver) {
 			this.print()
 			const way = prompt("Which way?") // user input: u , way = 'u'
 			this.move(way) // move("u")
-			this.checkCondition(this.positionRow, this.positionCol)
+			this.checkCondition()
 			this.update()
 		}
 	}
-
 }
 
-// Game Mode ON
-// Remark: Code example below should be deleted and use your own code.
-const newGame = new Field([
-	["░", "░", "O"],
-	["░", "O", "░"],
-	["░", "^", "░"],
-]);
+const newGame = new Field(Field.createField(2,3,3));
 
 newGame.runner()
+
