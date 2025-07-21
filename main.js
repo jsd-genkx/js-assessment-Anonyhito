@@ -20,6 +20,7 @@ class Field {
 		this.positionRow = 0;
 		this.positionCol = 0;
 		this.gameOver = false
+		this.steps = 0; //เพิ่มนับก้าว
 	}
 
 	static createField(holes,row,column) { 
@@ -52,9 +53,10 @@ return field;
 	print() {
 		clear();
 		for (let row of this.field) {
-			console.log(row) 
+			console.log(row)
 		}
-	}
+			console.log(`\nSteps taken: ${this.steps}`);
+}
 
 	updatePath() {
 		 this.field[this.positionRow][this.positionCol] = fieldCharacter;
@@ -62,19 +64,17 @@ return field;
 
 
 	move(direction) {
-	if (direction === "a") {
-		this.moveLeft()
+		 switch (direction.toLowerCase()) {
+      case "a": this.moveLeft(); break;
+      case "d": this.moveRight(); break;
+      case "w": this.moveUp(); break;
+      case "s": this.moveDown(); break;
+      default:
+        console.log("Invalid direction! Use 'a', 'd', 'w', or 's'");
+        return;
 	}
-	else if (direction === "d") {
-		this.moveRight()
-	}
-	else if (direction === "w") {
-		this.moveUp()
-	}
-	else if (direction === "s") {
-		this.moveDown()
-	}
-}
+	this.steps++; // นับก้าวเมื่อมีการเคลื่อนที่
+  }
 
 
 	moveLeft() {
@@ -135,10 +135,11 @@ return field;
 		while (!this.gameOver) {
 			this.print()
 			const way = prompt("Which way?") // user input: u , way = 'u'
-			this.move(way) // move("u")
+			this.move(way)
 			this.checkCondition()
 			this.update()
 		}
+		
 	}
 }
 
